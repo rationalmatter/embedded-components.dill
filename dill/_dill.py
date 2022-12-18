@@ -1727,6 +1727,7 @@ def save_weakproxy(pickler, obj):
 
 def _is_builtin_module(module):
     if not hasattr(module, "__file__"): return True
+    if module.__file__ is None: return True
     # If a module file name starts with prefix, it should be a builtin
     # module, so should always be pickled as a reference.
     names = ["base_prefix", "base_exec_prefix", "exec_prefix", "prefix", "real_prefix"]
@@ -1771,7 +1772,10 @@ def save_module(pickler, obj):
             log.info("# M2")
         else:
             log.info("M2: %s" % obj)
-            pickler.save_reduce(_import_module, (obj.__name__,), obj=obj)
+            if obj.__spec__ is not None:
+                pickler.save_reduce(_import_module, (obj.__spec__.name,), obj=obj)
+            else:
+                pickler.save_reduce(_import_module, (obj.__name__,), obj=obj)
             log.info("# M2")
         return
     return
