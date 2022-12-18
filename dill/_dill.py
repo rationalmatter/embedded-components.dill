@@ -1923,7 +1923,10 @@ def save_module(pickler, obj):
             logger.trace(pickler, "# M2")
         else:
             logger.trace(pickler, "M2: %s", obj)
-            pickler.save_reduce(_import_module, (obj.__name__,), obj=obj)
+            if obj.__spec__ is not None:
+                pickler.save_reduce(_import_module, (obj.__spec__.name,), obj=obj)
+            else:
+                pickler.save_reduce(_import_module, (obj.__name__,), obj=obj)
             logger.trace(pickler, "# M2")
     return
 
