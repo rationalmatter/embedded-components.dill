@@ -1585,6 +1585,7 @@ def save_weakproxy(pickler, obj):
 
 def _is_builtin_module(module):
     if not hasattr(module, "__file__"): return True
+    # Workaround for pickling issues in Juno, e.g. around cvxopt (and possibly other packages):
     if module.__file__ is None: return True
     # If a module file name starts with prefix, it should be a builtin
     # module, so should always be pickled as a reference.
@@ -1634,6 +1635,7 @@ def save_module(pickler, obj):
             logger.trace(pickler, "# M2")
         else:
             logger.trace(pickler, "M2: %s", obj)
+            # Workaround for pickling issues in Juno, e.g. around cvxopt (and possibly other packages):
             if obj.__spec__ is not None:
                 pickler.save_reduce(_import_module, (obj.__spec__.name,), obj=obj)
             else:
