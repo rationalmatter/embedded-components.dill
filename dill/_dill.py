@@ -1923,6 +1923,7 @@ def save_module(pickler, obj):
             logger.trace(pickler, "# M2")
         else:
             logger.trace(pickler, "M2: %s", obj)
+            # Workaround for pickling issues in Juno, e.g. around cvxopt (and possibly other packages):
             if obj.__spec__ is not None:
                 pickler.save_reduce(_import_module, (obj.__spec__.name,), obj=obj)
             else:
